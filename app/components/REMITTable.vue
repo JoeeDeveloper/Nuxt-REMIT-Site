@@ -163,7 +163,7 @@ const columns: TableColumn<REMITEvent>[] = [
     cell: ({ row }) => {
       const color = {
         Active: 'success' as const,
-        Pending: 'neutral' as const,
+        Pending: 'warning' as const,
         Suspended: 'neutral' as const,
         Inactive: 'error' as const,
         Cancelled: 'error' as const,
@@ -223,142 +223,144 @@ const table = useTemplateRef('table')
 </script>
 
 <template>
-  <div class="flex-1 divide-y divide-accented w-full">
-    <div class="flex items-center gap-2 px-4 py-3.5 overflow-x-auto">
-      <UFormField label="Search">
-        <UInput
-          :model-value="table?.tableApi?.getColumn('asset')?.getFilterValue() as string
-          "
-          class="max-w-sm min-w-[12ch]"
-          variant="subtle"
-          placeholder="Event ID, asset..."
-          @update:model-value="
-            table?.tableApi?.getColumn('asset')?.setFilterValue($event)
-          "
-        />
-      </UFormField>
-      <UFormField label="Asset">
-        <UInputMenu
-          :model-value="table?.tableApi?.getColumn('asset')?.getFilterValue() as string
-          "
-          class="max-w-sm min-w-[12ch]"
-          variant="subtle"
-          placeholder="Asset"
-          default-value="All assets"
-          @update:model-value="
-            table?.tableApi?.getColumn('asset')?.setFilterValue($asset)
-          "
-        />
-      </UFormField>
-      <UFormField label="Status">
-        <UInputMenu
-          :model-value="table?.tableApi?.getColumn('status')?.getFilterValue() as string
-          "
-          class="max-w-sm min-w-[12ch]"
-          variant="subtle"
-          placeholder="Status"
-          default-value="All statuses"
-          @update:model-value="
-            table?.tableApi?.getColumn('status')?.setFilterValue($asset)
-          "
-        />
-      </UFormField>
-      <UFormField label="Start from">
-        <UInputDate
-          :model-value="table?.tableApi?.getColumn('end')?.getFilterValue() as string"
-          class="max-w-sm min-w-[12ch]"
-          variant="subtle"
-        >
-          <UPopover :reference="inputDate?.inputsRef[3]?.$el">
-            <UButton
-              color="neutral"
-              variant="link"
-              size="sm"
-              icon="i-lucide-calendar"
-              aria-label="Select a date"
-              class="px-0"
-            />
-
-            <template #content>
-              <UCalendar
-                v-model="modelValue"
-                class="p-2"
+  <UContainer>
+    <div class="flex-1 divide-y divide-accented">
+      <div class="flex items-center gap-2 px-4 py-3.5 overflow-x-auto">
+        <UFormField label="Search">
+          <UInput
+            :model-value="table?.tableApi?.getColumn('asset')?.getFilterValue() as string
+            "
+            class="max-w-sm min-w-[12ch]"
+            variant="subtle"
+            placeholder="Event ID, asset..."
+            @update:model-value="
+              table?.tableApi?.getColumn('asset')?.setFilterValue($event)
+            "
+          />
+        </UFormField>
+        <UFormField label="Asset">
+          <UInputMenu
+            :model-value="table?.tableApi?.getColumn('asset')?.getFilterValue() as string
+            "
+            class="max-w-sm min-w-[12ch]"
+            variant="subtle"
+            placeholder="Asset"
+            default-value="All assets"
+            @update:model-value="
+              table?.tableApi?.getColumn('asset')?.setFilterValue($asset)
+            "
+          />
+        </UFormField>
+        <UFormField label="Status">
+          <UInputMenu
+            :model-value="table?.tableApi?.getColumn('status')?.getFilterValue() as string
+            "
+            class="max-w-sm min-w-[12ch]"
+            variant="subtle"
+            placeholder="Status"
+            default-value="All statuses"
+            @update:model-value="
+              table?.tableApi?.getColumn('status')?.setFilterValue($asset)
+            "
+          />
+        </UFormField>
+        <UFormField label="Start from">
+          <UInputDate
+            :model-value="table?.tableApi?.getColumn('end')?.getFilterValue() as string"
+            class="max-w-sm min-w-[12ch]"
+            variant="subtle"
+          >
+            <UPopover :reference="inputDate?.inputsRef[3]?.$el">
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                aria-label="Select a date"
+                class="px-0"
               />
-            </template>
-          </UPopover>
-        </UInputDate>
-      </UFormField>
-      <UFormField label="End before">
-        <UInputDate
-          :model-value="table?.tableApi?.getColumn('end')?.getFilterValue() as string"
-          class="max-w-sm min-w-[12ch]"
-          variant="subtle"
-        >
-          <UPopover :reference="inputDate?.inputsRef[3]?.$el">
-            <UButton
-              color="neutral"
-              variant="link"
-              size="sm"
-              icon="i-lucide-calendar"
-              aria-label="Select a date"
-              class="px-0"
-            />
 
-            <template #content>
-              <UCalendar
-                v-model="modelValue"
-                class="p-2"
+              <template #content>
+                <UCalendar
+                  v-model="modelValue"
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </UInputDate>
+        </UFormField>
+        <UFormField label="End before">
+          <UInputDate
+            :model-value="table?.tableApi?.getColumn('end')?.getFilterValue() as string"
+            class="max-w-sm min-w-[12ch]"
+            variant="subtle"
+          >
+            <UPopover :reference="inputDate?.inputsRef[3]?.$el">
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                aria-label="Select a date"
+                class="px-0"
               />
-            </template>
-          </UPopover>
-        </UInputDate>
-      </UFormField>
 
-      <UDropdownMenu
-        :items="table?.tableApi
-          ?.getAllColumns()
-          .filter((column) => column.getCanHide())
-          .map((column) => ({
-            label: upperFirst(column.id),
-            type: 'checkbox' as const,
-            checked: column.getIsVisible(),
-            onUpdateChecked(checked: boolean) {
-              table?.tableApi
-                ?.getColumn(column.id)
-                ?.toggleVisibility(!!checked);
-            },
-            onSelect(e: Event) {
-              e.preventDefault();
-            }
-          }))
-        "
-        :content="{ align: 'end' }"
+              <template #content>
+                <UCalendar
+                  v-model="modelValue"
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </UInputDate>
+        </UFormField>
+
+        <UDropdownMenu
+          :items="table?.tableApi
+            ?.getAllColumns()
+            .filter((column) => column.getCanHide())
+            .map((column) => ({
+              label: upperFirst(column.id),
+              type: 'checkbox' as const,
+              checked: column.getIsVisible(),
+              onUpdateChecked(checked: boolean) {
+                table?.tableApi
+                  ?.getColumn(column.id)
+                  ?.toggleVisibility(!!checked);
+              },
+              onSelect(e: Event) {
+                e.preventDefault();
+              }
+            }))
+          "
+          :content="{ align: 'end' }"
+        >
+          <UButton
+            label="Columns"
+            color="neutral"
+            variant="outline"
+            trailing-icon="i-lucide-chevron-down"
+            class="ml-auto"
+            aria-label="Columns select dropdown"
+          />
+        </UDropdownMenu>
+      </div>
+
+      <UTable
+        ref="table"
+        :data="data"
+        :columns="columns"
+        sticky
+        class="h-96"
       >
-        <UButton
-          label="Columns"
-          color="neutral"
-          variant="outline"
-          trailing-icon="i-lucide-chevron-down"
-          class="ml-auto"
-          aria-label="Columns select dropdown"
-        />
-      </UDropdownMenu>
-    </div>
+        <template #expanded="{ row }">
+          <pre>{{ row.original }}</pre>
+        </template>
+      </UTable>
 
-    <UTable
-      ref="table"
-      :data="data"
-      :columns="columns"
-      sticky
-      class="h-96"
-    >
-      <template #expanded="{ row }">
-        <pre>{{ row.original }}</pre>
-      </template>
-    </UTable>
-
-    <div class="px-4 py-3.5 text-sm text-muted">
-      Total entries: {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }}
+      <div class="px-4 py-3.5 text-sm text-muted">
+        Total entries: {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }}
+      </div>
     </div>
-  </div>
+  </UContainer>
 </template>

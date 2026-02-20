@@ -41,8 +41,10 @@ useSeoMeta({
       </template>
     </UHeader>
 
-    <UMain>
-      <NuxtPage />
+    <UMain class="w-full">
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
     </UMain>
 
     <USeparator icon="simple-line-icons:arrow-down" />

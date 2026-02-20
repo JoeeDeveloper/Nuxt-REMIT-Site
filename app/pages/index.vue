@@ -6,7 +6,7 @@
         color="neutral"
         description="Filter and search REMIT events by asset, date range, status, or event ID. Data is displayed in GMT."
       />
-      <REMITTable />
     </UPageSection>
+    <REMITTable />
   </div>
 </template>
